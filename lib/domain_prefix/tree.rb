@@ -2,7 +2,7 @@ require 'simpleidn'
 
 class DomainPrefix::Tree < Hash
   # == Instance Methods =====================================================
-  
+
   def insert(path)
     components = path.sub(/^!/, '').split(DomainPrefix::SEPARATOR).reverse
 
@@ -19,10 +19,10 @@ class DomainPrefix::Tree < Hash
     leaves.each do |leaf|
       leaf[:required] = required
     end
-    
+
     self
   end
-  
+
   def follow(path)
     path = path.to_s.split(SEPARATOR) unless (path.is_a?(Array))
     path = path.reverse
@@ -48,8 +48,8 @@ protected
       return result if (result)
     end
 
-    wildcard_branch = self["*"]
-    
+    wildcard_branch = self['*']
+
     if (wildcard_branch)
       result = wildcard_branch.traverse(path, index + 1)
 

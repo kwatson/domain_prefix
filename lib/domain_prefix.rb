@@ -1,10 +1,11 @@
 # encoding: UTF-8
+# frozen_string_literal: true
 
 module DomainPrefix
   # == Dependencies =========================================================
 
   require 'domain_prefix/tree'
-  
+
   # == Constants ============================================================
 
   SEPARATOR = '.'.freeze
@@ -18,21 +19,27 @@ module DomainPrefix
       end.reject(&:empty?).freeze
     end
   end
-  
+
   TLD_NAMES = TLD_SET.sort_by do |d|
     [ -d.length, d ]
   end.freeze
-  
+
   TLD_TREE = TLD_NAMES.inject(Tree.new) do |t, name|
     t.insert(name)
   end.freeze
-  
+
+  TLDS = TLD_TREE.keys.sort.freeze
+
   NONPUBLIC_TLD = {
     'local' => true
   }.freeze
 
   # == Module Methods =======================================================
-  
+
+  def tlds
+    TLDS
+  end
+
   # Returns a cleaned up, canonical version of a domain name.
   def rfc3492_canonical_domain(domain)
     # FIX: Full implementation of RFC3429 required.
@@ -44,14 +51,14 @@ module DomainPrefix
   def public_tld?(tld)
     !NONPUBLIC_TLD.key?(tld)
   end
-  
+
   # Returns the registered domain name for a given FQDN or nil if one cannot
   # be determined.
   def registered_domain(fqdn, rules = :strict)
     return unless (fqdn)
-    
+
     components = rfc3492_canonical_domain(fqdn).split(SEPARATOR)
-    
+
     return if (components.empty? or components.find(&:empty?))
 
     if (rules == :strict)
@@ -67,7 +74,7 @@ module DomainPrefix
         return
       end
     end
-    
+
     suffix.join(SEPARATOR)
   end
 
@@ -83,7 +90,7 @@ module DomainPrefix
     return unless (public_tld?(components.last))
 
     suffix = TLD_TREE.follow(components)
-    
+
     return unless (suffix)
 
     suffix.shift
@@ -95,12 +102,12 @@ module DomainPrefix
   # be determined.
   def tld(fqdn)
     suffix = public_suffix(rfc3492_canonical_domain(fqdn))
-    
+
     suffix and suffix.split(SEPARATOR).last
   end
 
   # Returns the name component of a given domain or nil if one cannot be
-  # determined.  
+  # determined.
   def name(fqdn)
     if (fqdn = registered_domain(fqdn))
       fqdn.split(SEPARATOR).first
@@ -108,6 +115,6 @@ module DomainPrefix
       nil
     end
   end
-  
+
   extend self
 end

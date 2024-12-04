@@ -54,5 +54,5 @@ project is included in this gem.
 
 ## Copyright
 
-Copyright (c) 2009-2019 Scott Tadman, PostageApp Ltd.
+Copyright (c) 2009-2024 Scott Tadman, Appity Inc.
 See [LICENSE](LICENSE.txt) for details.
